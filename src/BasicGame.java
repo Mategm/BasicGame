@@ -12,40 +12,84 @@ public class BasicGame {
 		// pálya inicializálása
 		for (int i = 0; i < level.length; i++) {
 			for (int j = 0; j < level[i].length; j++) {
-				level[i][j] = " ";
+				if (i == 0 || i == 9 || j == 0 || j == 9) {
+					level[i][j] = "X";
+				} else {
+					level[i][j] = " ";
+				}
 			}
 		}
-		for (int k=0; k < 10; k++) {
+		
+		for (int k=1; k <= 100; k++) {
+			
+			if (k % 10 == 0) {
+				direction = changeDirection(direction);
+			}
+			
 			switch (direction) {
 			case UP:
-				row--;
+				if (level[row-1][column].equals(" ")) {
+					row--;
+				}	
 				break;
 			case DOWN:
-				row++;
+				if (level[row+1][column].equals(" ")) {
+					row++;
+				}
 				break;
 			case LEFT:
-				column--;
+				if (level[row][column-1].equals(" ")) {
+					column--;
+				}
 				break;
 			case RIGHT:
-				column++;
+				if (level[row][column+1].equals(" ")) {
+					column++;
+				}
 				break;
 			}
 			
-			// pálya és játékos kirajzolása
-			for (int i = 0; i < level.length; i++) {
-				for (int j = 0; j < level[i].length; j++) {
-					if (i == row && j == column) {
-						System.out.print(playerMark);
-					} else {
-						System.out.print(level[i][j]);
-					}
-				}
-				System.out.println();
-			}
 			
-			System.out.println("--------");
-			Thread.sleep(1_000L);
+			draw(level, playerMark, row, column);
+			
+			System.out.println("----------");
+			Thread.sleep(500L);
+		}
+	}
+
+	static Direction changeDirection(Direction direction) {
+		switch (direction) {
+		case RIGHT:
+			return direction = Direction.DOWN;
+		case DOWN:
+			return direction = Direction.LEFT;
+		case LEFT:
+			return direction = Direction.UP;
+		case UP:
+			return direction = Direction.RIGHT;
+		}
+		return direction;
+	}
+	
+	static void draw(String[][] board, String mark, int x, int y) {
+		// pálya és játékos kirajzolása
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[i].length; j++) {
+				if (i == x && j == y) {
+					System.out.print(mark);
+				} else {
+					System.out.print(board[i][j]);
+				}
+			}
+			System.out.println();
 		}
 	}
 
 }
+
+
+
+
+
+
+
