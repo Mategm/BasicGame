@@ -2,10 +2,10 @@ import java.util.Random;
 
 public class BasicGame {
 	
-	static int gameLoopNumber = 100;
-	static int height = 15;
-	static int width = 15;
-	static Random random = new Random();
+	static final int GAME_LOOP_NUMBER = 100;
+	static final int HEIGHT = 15;
+	static final int WIDTH = 15;
+	static final Random random = new Random();
 
 	public static void main(String[] args) throws InterruptedException {
 		String playerMark = "O";
@@ -18,11 +18,11 @@ public class BasicGame {
 		int enemyColumn = 4;
 		Direction enemyDirection = Direction.LEFT;
 		
-		String[][] level = new String[height][width];
+		String[][] level = new String[HEIGHT][WIDTH];
 		initLevel(level);
 		addRandomWall(level, 5, 0);
 		
-		for (int iterationNumber=1; iterationNumber <= gameLoopNumber; iterationNumber++) {
+		for (int iterationNumber=1; iterationNumber <= GAME_LOOP_NUMBER; iterationNumber++) {
 			// játékos léptetése
 			if (iterationNumber % 15 == 0) {
 				playerDirection = changeDirection(playerDirection);
@@ -31,13 +31,13 @@ public class BasicGame {
 			playerRow = playerCoordinates[0];
 			playerColumn = playerCoordinates[1];
 			
-			// ellenfél léptetése
-			if (iterationNumber % 10 == 0) {
-				enemyDirection = changeDirection(enemyDirection);
+			// ellenfél irány változtatása és léptetése
+			enemyDirection = changeEnemyDirection(level, enemyDirection, playerRow, playerColumn, enemyRow, enemyColumn);
+			if (iterationNumber % 2 == 0) {
+				int[] enemyCoordinates = makeMove(enemyDirection, level, enemyRow, enemyColumn);
+				enemyRow = enemyCoordinates[0];
+				enemyColumn = enemyCoordinates[1];
 			}
-			int[] enemyCoordinates = makeMove(enemyDirection, level, enemyRow, enemyColumn);
-			enemyRow = enemyCoordinates[0];
-			enemyColumn = enemyCoordinates[1];
 			
 			draw(level, playerMark, playerRow, playerColumn, enemyMark, enemyRow, enemyColumn);
 			addSomeDelay(100L, iterationNumber);
@@ -49,6 +49,22 @@ public class BasicGame {
 		System.out.println("Game Over!");
 	}
 	
+	static Direction changeEnemyDirection(String[][] level, Direction originalEnemyDirection, int playerRow, int playerColumn, int enemyRow, int enemyColumn) {
+		if (playerRow < enemyRow && level[enemyRow-1][enemyColumn].equals(" ")) {
+			return Direction.UP;
+		}
+		if (playerRow > enemyRow && level[enemyRow+1][enemyColumn].equals(" ")) {
+			return Direction.DOWN;
+		}
+		if (playerColumn < enemyColumn && level[enemyRow][enemyColumn-1].equals(" ")) {
+			return Direction.LEFT;
+		}
+		if (playerColumn > enemyColumn && level[enemyRow][enemyColumn+1].equals(" ")) {
+			return Direction.RIGHT;
+		}
+		return originalEnemyDirection;
+	}
+
 	static void addRandomWall(String[][] level, int numOfHorWall, int numOfVertWall) {
 		// TODO fal ne kerüljön a játékosra vagy az ellenfélre
 		for (int i = 0; i < numOfHorWall; i++) {
@@ -60,18 +76,18 @@ public class BasicGame {
 	}
 	
 	static void addHorizontalWall(String[][] level) {
-		int wallWidth = random.nextInt(width-3); // 0 - 11
-		int wallRow = random.nextInt(height-3) + 1;
-		int wallColumn = random.nextInt(width-2 - wallWidth);
+		int wallWidth = random.nextInt(WIDTH-3); // 0 - 11
+		int wallRow = random.nextInt(HEIGHT-3) + 1;
+		int wallColumn = random.nextInt(WIDTH-2 - wallWidth);
 		for (int i = 0; i < wallWidth; i++) {
 			level[wallRow][wallColumn + 1] = "X";
 		}
 	}
 	
 	static void addVerticalWall(String[][] level) {
-		int wallHeight = random.nextInt(height-3);
-		int wallRow = random.nextInt(height-2 - wallHeight);
-		int wallColumn = random.nextInt(width - 2) +1;
+		int wallHeight = random.nextInt(HEIGHT-3);
+		int wallRow = random.nextInt(HEIGHT-2 - wallHeight);
+		int wallColumn = random.nextInt(WIDTH - 2) +1;
 		for (int i = 0; i < wallHeight; i++) {
 			level[wallRow + 1][wallColumn] = "X";
 		}
@@ -111,7 +127,7 @@ public class BasicGame {
 	private static void initLevel(String[][] level) {
 		for (int row = 0; row < level.length; row++) {
 			for (int column = 0; column < level[row].length; column++) {
-				if (row == 0 || row == height-1 || column == 0 || column == width-1 ) {
+				if (row == 0 || row == HEIGHT-1 || column == 0 || column == WIDTH-1 ) {
 					level[row][column] = "X";
 				} else {
 					level[row][column] = " ";
@@ -136,8 +152,8 @@ public class BasicGame {
 	
 	static void draw(String[][] board, String playerMark, int playerRow, int playerColumn, String enemyMark, int enemyRow, int enemyColumn) {
 		// pálya és játékos kirajzolása
-		for (int row = 0; row < height; row++) {
-			for (int column = 0; column < width; column++) {
+		for (int row = 0; row < HEIGHT; row++) {
+			for (int column = 0; column < WIDTH; column++) {
 				if (row == playerRow && column == playerColumn) {
 					System.out.print(playerMark);
 				} else if (row == enemyRow && column == enemyColumn) {
