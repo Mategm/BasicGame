@@ -1,9 +1,11 @@
+import java.util.Random;
 
 public class BasicGame {
 	
 	static int gameLoopNumber = 100;
 	static int height = 15;
 	static int width = 15;
+	static Random random = new Random();
 
 	public static void main(String[] args) throws InterruptedException {
 		String playerMark = "O";
@@ -18,6 +20,7 @@ public class BasicGame {
 		
 		String[][] level = new String[height][width];
 		initLevel(level);
+		addRandomWall(level, 5, 0);
 		
 		for (int iterationNumber=1; iterationNumber <= gameLoopNumber; iterationNumber++) {
 			// játékos léptetése
@@ -37,7 +40,40 @@ public class BasicGame {
 			enemyColumn = enemyCoordinates[1];
 			
 			draw(level, playerMark, playerRow, playerColumn, enemyMark, enemyRow, enemyColumn);
-			addSomeDelay(200L, iterationNumber);
+			addSomeDelay(100L, iterationNumber);
+			
+			if (playerRow == enemyRow && playerColumn == enemyColumn) {
+				break;
+			}
+		}
+		System.out.println("Game Over!");
+	}
+	
+	static void addRandomWall(String[][] level, int numOfHorWall, int numOfVertWall) {
+		// TODO fal ne kerüljön a játékosra vagy az ellenfélre
+		for (int i = 0; i < numOfHorWall; i++) {
+			addHorizontalWall(level);
+		}
+		for (int i = 0; i < numOfVertWall; i++) {
+			addVerticalWall(level);
+		}
+	}
+	
+	static void addHorizontalWall(String[][] level) {
+		int wallWidth = random.nextInt(width-3); // 0 - 11
+		int wallRow = random.nextInt(height-3) + 1;
+		int wallColumn = random.nextInt(width-2 - wallWidth);
+		for (int i = 0; i < wallWidth; i++) {
+			level[wallRow][wallColumn + 1] = "X";
+		}
+	}
+	
+	static void addVerticalWall(String[][] level) {
+		int wallHeight = random.nextInt(height-3);
+		int wallRow = random.nextInt(height-2 - wallHeight);
+		int wallColumn = random.nextInt(width - 2) +1;
+		for (int i = 0; i < wallHeight; i++) {
+			level[wallRow + 1][wallColumn] = "X";
 		}
 	}
 
